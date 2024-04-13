@@ -70,7 +70,7 @@ def get_price():
     kwh_price = price[hour]["NOK_per_kWh"]
     kwh_price_total = round(
         (kwh_price + settings["misc_costs"] / 100) * 1.25 + transfer_fee, 2)
-    print(f'Calculated kwh in NOK: {kwh_price_total}.')
+    print(f'Calculated kwh in NOK: {kwh_price_total} KR.')
     return kwh_price_total
 
 
@@ -119,7 +119,7 @@ try:
 except requests.exceptions.HTTPError:
     new_token = refresh_token()
     if new_token.status_code == 200:
-        print('Tokes was refreshed.')
+        print('Tokens was refreshed.')
         retry = update_price()
         if retry.status_code == 200:
             print('Price was updated successfully.')
