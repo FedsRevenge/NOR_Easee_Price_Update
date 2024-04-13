@@ -109,6 +109,7 @@ try:
     if new_price.status_code == 200:
         print('Price was updated successfully.')
     else:
+        print(new_price.raise_for_status())
         print('Price update failed.')
 except requests.exceptions.HTTPError:
     new_token = refresh_token()
@@ -118,8 +119,8 @@ except requests.exceptions.HTTPError:
         if retry.status_code == 200:
             print('Price was updated successfully.')
         else:
-            retry.raise_for_status()
+            print(retry.raise_for_status())
             print('Unable to update price.')
     else:
-        new_token.raise_for_status()
+        print(new_token.raise_for_status())
         print('Unable to update refresh token.')
