@@ -61,6 +61,8 @@ if len(str(day)) < 2:
 
 
 def get_price():
+    """ Gets price from www.hvakosterstrommen.no API, sums up the total
+        cost based upon the data from the json file."""
     price_url = (f'https://www.hvakosterstrommen.no/api/v1/prices/{year}/'
                  f'{month}-{day}_{settings["zone"].upper()}.json')
     response = requests.get(url=price_url)
@@ -73,6 +75,8 @@ def get_price():
 
 
 def refresh_token():
+    """ When the access toke expires this function requests an updated
+        access and refresh token, then updates the json file. """
     bearer_token = f'Bearer: {settings["access_token"]}'
     url = 'https://api.easee.com/api/accounts/refresh_token'
     payload = ("{\"accessToken\":\"" + settings["access_token"] +
@@ -95,6 +99,7 @@ def refresh_token():
 
 
 def update_price():
+    """ Sends the updated kWh price to the Easee API. """
     new_kwh_price = get_price()
     url_easee = f'https://api.easee.com/api/sites/{settings["site_id"]}/price'
     payload = f"{{\"currencyId\":\"NOK\",\"costPerKWh\":{new_kwh_price}" + "}"
