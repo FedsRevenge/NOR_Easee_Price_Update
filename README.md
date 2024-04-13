@@ -10,7 +10,7 @@ More features:
 Current Status:
  - [X] Does it update?
  - [ ] Can it run a whole day, once an hour on a raspberry pi without problem?
- - [ ] Does it update the tokens?
+ - [X] Does it update the tokens?
 
 ### Information you need to set this up Easee:
 
