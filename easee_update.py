@@ -70,7 +70,7 @@ def get_price():
     kwh_price = price[hour]["NOK_per_kWh"]
     kwh_price_total = round(
         (kwh_price + settings["misc_costs"] / 100) * 1.25 + transfer_fee, 2)
-    print(f'Calculated kwh in NOK: {kwh_price_total} KR.')
+    print(f'{now} - Calculated kwh in NOK: {kwh_price_total} KR.')
     return kwh_price_total
 
 
@@ -112,20 +112,20 @@ def update_price():
 try:
     new_price = update_price()
     if new_price.status_code == 200:
-        print('Price was updated successfully.')
+        print(f'{now} - Price was updated successfully.')
     else:
         print(new_price.raise_for_status())
-        print('Price update failed.')
+        print(f'{now} - Price update failed.')
 except requests.exceptions.HTTPError:
     new_token = refresh_token()
     if new_token.status_code == 200:
-        print('Tokens was refreshed.')
+        print(f'{now} - Tokens was refreshed.')
         retry = update_price()
         if retry.status_code == 200:
-            print('Price was updated successfully.')
+            print(f'{now}Price was updated successfully.')
         else:
             print(retry.raise_for_status())
-            print('Unable to update price.')
+            print(f'{now} - Unable to update price.')
     else:
         print(new_token.raise_for_status())
-        print('Unable to update refresh token.')
+        print(f'{now} - Unable to update refresh token.')
