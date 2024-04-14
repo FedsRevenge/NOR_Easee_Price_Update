@@ -4,6 +4,9 @@ I used the hvakosterstrommen.no API to get the spot price, then add the fees and
 
 At the moment the scripts gets the price in Norwegian Øre, then transfer fees are added before VAT are added to the total, then the additional fees are added. It's then converted to a whole Norwegian Krone before its uploaded using the Easee API.
 
+Run the script manually the first time as it will set up the values for location, costs and API tokens.
+After that you can set it up to run once each hour, personally I use a Raspberry Pi.
+
 **Features:**
  - [X] Goverment rebate calculations (Strømstøtte).
  - [X] Auto refreshes tokens.
