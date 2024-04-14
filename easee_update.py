@@ -7,6 +7,7 @@ import json
     It will download the current spot price, add the transmission fees,
     misc costs and vat.
     
+    Cost per kWh is also calculated with the current government rebate.
     
     It will then update the charger using the API, and refresh the token
     to keep updating the chargers automatically. This script should be set
@@ -32,11 +33,13 @@ except FileNotFoundError:
     print(f'\nSite ID can be found at: {SITE_ID}')
     settings["site_id"] = int(input("Site ID: "))
     print(f'\nYour local power distribute has this information.')
-    settings["transmission_day"] = float(input("Transmission fee daytime: "))
+    settings["transmission_day"] = float(
+        input('Transmission fee daytime (In "øre"): '))
     settings["transmission_night"] = float(
-        input("Transmission fee nighttime: "))
+        input('Transmission fee nighttime (In "øre"): '))
     print("Misc other fees.")
-    settings["misc_costs"] = float(input("Additional costs: ")) / 100
+    settings["misc_costs"] = float(
+        input('Additional costs (In "øre"): ')) / 100
     print(f"\nType what power zone you're in: NO1, NO2, NO3, NO4, NO5 or NO6.")
     settings["zone"] = str(input("Zone: "))
     print(f"\nAccess Token can be setup here: {URL_AUTHENTICATION}")
@@ -68,6 +71,13 @@ def get_price():
     response = requests.get(url=price_url)
     price = response.json()
     kwh_price = price[hour]["NOK_per_kWh"]
+
+    # Government rebate aka "Strømstøtte". These are the values for 2024:
+    # If cost is over 0.73 NOK/kWh the government pays 90% of the cost of
+    # whatever is over 0.73 NOK.
+    if kwh_price > 0.73:
+        kwh_price = 0.73 + (kwh_price - 0.73) * 0.9
+
     kwh_price_total = round(
         (kwh_price + settings["misc_costs"] / 100) * 1.25 + transfer_fee, 2)
     print(f'{now} - Calculated kwh in NOK: {kwh_price_total} KR.')
@@ -119,7 +129,7 @@ try:
 except requests.exceptions.HTTPError:
     new_token = refresh_token()
     if new_token.status_code == 200:
-        print(f'{now} - Tokens was refreshed.')
+        print(f'{now} - Tokens were refreshed.')
         retry = update_price()
         if retry.status_code == 200:
             print(f'{now} - Price was updated successfully.')
