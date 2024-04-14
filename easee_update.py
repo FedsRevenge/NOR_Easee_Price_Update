@@ -122,7 +122,7 @@ except requests.exceptions.HTTPError:
         print(f'{now} - Tokens was refreshed.')
         retry = update_price()
         if retry.status_code == 200:
-            print(f'{now}Price was updated successfully.')
+            print(f'{now} - Price was updated successfully.')
         else:
             print(retry.raise_for_status())
             print(f'{now} - Unable to update price.')
