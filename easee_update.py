@@ -2,6 +2,7 @@ from datetime import datetime
 import pytz
 import requests
 import json
+import time
 
 """ This script is created for use in Norway with Easee EV chargers.
     It will download the current spot price, add the transmission fees,
@@ -65,9 +66,31 @@ if len(str(day)) < 2:
 
 def get_price():
     """ Gets price from www.hvakosterstrommen.no API, sums up the total
-        cost based upon the data from the json file."""
-    price_url = (f'https://www.hvakosterstrommen.no/api/v1/prices/{year}/'
-                 f'{month}-{day}_{settings["zone"].upper()}.json')
+        cost based upon the data from the json file.
+
+        Will try 3 times to get the price from the API."""
+
+    max_retries = 3
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            price_url = (
+                f'https://www.hvakosterstrommen.no/api/v1/prices/{year}/'
+                f'{month}-{day}_{settings["zone"].upper()}.json')
+            response = requests.get(url=price_url)
+            response.raise_for_status()
+            break
+        except requests.exceptions.RequestException as error:
+            print(f"{now} - Error: {error}")
+            retry_count += 1
+            if retry_count < max_retries:
+                print(f"{now} - Retrying... (Attempt {retry_count}.")
+                time.sleep(10)
+            else:
+                print(f"{now} - Maximum retry limit reached.")
+                break
+
+    # noinspection PyUnboundLocalVariable
     response = requests.get(url=price_url)
     price = response.json()
     kwh_price = price[hour]["NOK_per_kWh"]
